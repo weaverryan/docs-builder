@@ -3,6 +3,7 @@
 namespace SymfonyDocsBuilder\Command;
 
 use Doctrine\RST\Event\PostBuildRenderEvent;
+use Doctrine\RST\Event\PostNodeRenderEvent;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,9 +13,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use SymfonyDocsBuilder\BuildContext;
+use SymfonyDocsBuilder\CI\CodeSniffer\CodeSnifferViolationsList;
 use SymfonyDocsBuilder\CI\MissingFilesChecker;
 use SymfonyDocsBuilder\Generator\HtmlForPdfGenerator;
 use SymfonyDocsBuilder\Generator\JsonGenerator;
+use SymfonyDocsBuilder\Listener\CodeSnifferListener;
 use SymfonyDocsBuilder\Listener\CopyImagesDirectoryListener;
 
 class BuildDocsCommand extends Command
@@ -24,6 +27,7 @@ class BuildDocsCommand extends Command
     protected static $defaultName = 'build:docs';
 
     private $missingFilesChecker;
+    private $codeSnifferViolationsList;
 
     public function __construct(BuildContext $buildContext)
     {
@@ -33,7 +37,8 @@ class BuildDocsCommand extends Command
         $this->finder       = new Finder();
         $this->buildContext = $buildContext;
 
-        $this->missingFilesChecker = new MissingFilesChecker($buildContext);
+        $this->missingFilesChecker       = new MissingFilesChecker($buildContext);
+        $this->codeSnifferViolationsList = new CodeSnifferViolationsList();
     }
 
     protected function configure()
@@ -59,15 +64,30 @@ class BuildDocsCommand extends Command
 
         $this->doInitialize($input, $output, $sourceDir, $outputDir);
 
-        $this->builder->getConfiguration()->getEventManager()->addEventListener(
+        $this->eventManager->addEventListener(
             PostBuildRenderEvent::POST_BUILD_RENDER,
             new CopyImagesDirectoryListener($this->buildContext)
+        );
+
+        $this->eventManager->addEventListener(
+            PostNodeRenderEvent::POST_NODE_RENDER,
+            new CodeSnifferListener($this->codeSnifferViolationsList)
         );
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->startBuild();
+
+        if (\count($this->codeSnifferViolationsList)) {
+            $this->io->newLine(2);
+            $this->io->table(['file', 'reason(s)'], $this->codeSnifferViolationsList->getViolationsAsArray());
+            $this->filesystem->remove($this->buildContext->getHtmlOutputDir());
+
+            $this->io->error('Code sniffer violations detected! Please fix them.');
+
+            return;
+        }
 
         $this->io->newLine(2);
         $this->io->success('HTML rendering complete!');

@@ -25,11 +25,31 @@ class BuildDocsCommandTest extends TestCase
             ]
         );
 
+        // no code sniffer violation should be found
+        $this->assertNotContains('[ERROR]', $output, 'Code sniffer violation found.');
+
         $this->assertEquals(1, substr_count($output, '[WARNING]'));
-        $this->assertContains('[OK] Parse process complete', $output);
+        $this->assertContains('[OK] Parse process complete', $output, 'Parse process was not successful');
 
         $filesystem = new Filesystem();
         $this->assertTrue($filesystem->exists(sprintf('%s/_images/symfony-logo.png', $outputDir)));
+    }
+
+    public function testBuildDocsWithCodeSnifferViolation()
+    {
+        $buildContext = $this->createParameterBag();
+        $outputDir    = sprintf('%s/tests/_output', $buildContext->getBasePath());
+
+        $output = $this->executeCommand(
+            $buildContext,
+            [
+                'source-dir' => sprintf('%s/tests/fixtures/source/code-sniffer-violation', $buildContext->getBasePath()),
+                'output-dir' => $outputDir,
+            ]
+        );
+
+        // code sniffer violation found
+        $this->assertContains('[ERROR]', $output, 'No code sniffer violation found.');
     }
 
     public function testBuildDocsForPdf()
@@ -46,6 +66,7 @@ class BuildDocsCommandTest extends TestCase
             ]
         );
 
+        $this->assertNotContains('[ERROR]', $output);
         $this->assertNotContains('[WARNING]', $output);
 
         $filesystem = new Filesystem();
