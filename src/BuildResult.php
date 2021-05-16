@@ -22,7 +22,10 @@ class BuildResult
     public function __construct(Builder $builder)
     {
         $this->builder = $builder;
-        $this->errors = $builder->getErrorManager()->getErrors();
+        $this->errors = [];
+        foreach ($builder->getErrorManager()->getErrors() as $error) {
+            $this->errors[] = $error->asString();
+        }
     }
 
     public function appendError(string $errorMessage): void

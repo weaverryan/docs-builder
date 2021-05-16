@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "90a06cb575bf7dff830edfd76f6597dc",
+    "content-hash": "be8fc6106d49914525462c5f7851d92c",
     "packages": [
         {
             "name": "doctrine/event-manager",
@@ -102,16 +102,16 @@
         },
         {
             "name": "doctrine/rst-parser",
-            "version": "0.4.0",
+            "version": "0.5.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/rst-parser.git",
-                "reference": "dcaee4368788c0bcaf0bdaed351c106f76c58739"
+                "reference": "c4ac6f1fa422b8ce90ef8db6a7d9d657db257b80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/rst-parser/zipball/dcaee4368788c0bcaf0bdaed351c106f76c58739",
-                "reference": "dcaee4368788c0bcaf0bdaed351c106f76c58739",
+                "url": "https://api.github.com/repos/doctrine/rst-parser/zipball/c4ac6f1fa422b8ce90ef8db6a7d9d657db257b80",
+                "reference": "c4ac6f1fa422b8ce90ef8db6a7d9d657db257b80",
                 "shasum": ""
             },
             "require": {
@@ -167,9 +167,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/rst-parser/issues",
-                "source": "https://github.com/doctrine/rst-parser/tree/0.4.0"
+                "source": "https://github.com/doctrine/rst-parser/tree/0.5.x"
             },
-            "time": "2021-04-05T20:41:08+00:00"
+            "time": "2021-05-16T11:44:49+00:00"
         },
         {
             "name": "psr/container",
@@ -1791,7 +1791,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "doctrine/rst-parser": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

@@ -14,9 +14,10 @@
         }
     },
     "require": {
+        "php": ">=7.4",
         "ext-json": "*",
         "ext-curl": "*",
-        "doctrine/rst-parser": "^0.4",
+        "doctrine/rst-parser": "^0.5@dev",
         "scrivo/highlight.php": "^9.12.0",
         "symfony/filesystem": "^5.2",
         "symfony/finder": "^5.2",
