@@ -29,6 +29,8 @@ final class KernelFactory
     public static function createKernel(BuildConfig $buildConfig, ?UrlChecker $urlChecker = null): Kernel
     {
         $configuration = new RSTParserConfiguration();
+        // needed to avoid outputting parser errors on the console output or the webpage contents
+        $configuration->silentOnError(true);
         $configuration->setCustomTemplateDirs([__DIR__.'/Templates']);
         $configuration->setTheme($buildConfig->getTheme());
         $configuration->setCacheDir(sprintf('%s/var/cache', $buildConfig->getCacheDir()));
