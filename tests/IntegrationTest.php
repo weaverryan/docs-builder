@@ -261,6 +261,54 @@ class IntegrationTest extends AbstractIntegrationTest
         ];
     }
 
+    public function testParseString()
+    {
+        $rstString = <<<RST
+Lorem ipsum dolor sit amet
+==========================
+
+Consectetur adipisicing elit, sed do eiusmod
+tempor **incididunt ut** labore et dolore magna aliqua.
+
+* Ut enim ad minim veniam
+* Quis nostrud exercitation
+* Ullamco laboris nisi ut
+
+`Aliquip ex ea commodo <https://symfony.com>`_ consequat.
+Duis aute irure dolor in reprehenderit in voluptate `velit esse`_.
+
+Cillum dolore eu fugiat nulla pariatur
+--------------------------------------
+
+Excepteur sint occaecat cupidatat non proident, sunt in
+culpa qui *officia deserunt* mollit anim id est laborum.
+
+.. _`velit esse`: https://github.com
+RST;
+
+        $htmlString = <<<HTML
+<div class="section">
+<h1 id="lorem-ipsum-dolor-sit-amet"><a class="headerlink" href="#lorem-ipsum-dolor-sit-amet" title="Permalink to this headline">Lorem ipsum dolor sit amet</a></h1>
+<p>Consectetur adipisicing elit, sed do eiusmod
+tempor <strong>incididunt ut</strong> labore et dolore magna aliqua.</p>
+<ul>
+    <li>Ut enim ad minim veniam</li>
+<li>Quis nostrud exercitation</li>
+<li>Ullamco laboris nisi ut</li>
+</ul>
+<p><a href="https://symfony.com" class="reference external">Aliquip ex ea commodo</a> consequat.
+Duis aute irure dolor in reprehenderit in voluptate <a href="https://github.com" class="reference external" rel="external noopener noreferrer" target="_blank">velit esse</a>.</p>
+<div class="section">
+<h2 id="cillum-dolore-eu-fugiat-nulla-pariatur"><a class="headerlink" href="#cillum-dolore-eu-fugiat-nulla-pariatur" title="Permalink to this headline">Cillum dolore eu fugiat nulla pariatur</a></h2>
+<p>Excepteur sint occaecat cupidatat non proident, sunt in
+culpa qui <em>officia deserunt</em> mollit anim id est laborum.</p>
+</div>
+</div>
+HTML;
+
+        $this->assertSame($htmlString, (new DocBuilder())->buildString($rstString)->getStringResult());
+    }
+
     private function createIndenter(): Indenter
     {
         $indenter = new Indenter();

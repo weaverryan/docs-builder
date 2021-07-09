@@ -30,6 +30,8 @@ class BuildConfig
     private $subdirectoryToBuild;
     private $excludedPaths;
     private $fileFinder;
+    private $isContentAString;
+    private $disableJsonFileGeneration;
 
     public function __construct()
     {
@@ -38,6 +40,8 @@ class BuildConfig
         $this->symfonyVersion = '4.4';
         $this->excludedPaths = [];
         $this->imagesPublicPrefix = '';
+        $this->isContentAString = false;
+        $this->disableJsonFileGeneration = false;
     }
 
     public function createFileFinder(): Finder
@@ -126,6 +130,16 @@ class BuildConfig
     public function getImagesPublicPrefix(): string
     {
         return $this->imagesPublicPrefix;
+    }
+
+    public function generateJsonFiles(): bool
+    {
+        return !$this->disableJsonFileGeneration;
+    }
+
+    public function isContentAString(): bool
+    {
+        return $this->isContentAString;
     }
 
     public function setSymfonyVersion(string $version): self
@@ -218,5 +232,20 @@ class BuildConfig
         }
 
         $this->excludedPaths = $excludedPaths;
+    }
+
+    // needed to differentiate between building a dir of contents or just a string of contents
+    public function setIsContentAString(bool $isString): self
+    {
+        $this->isContentAString = true;
+
+        return $this;
+    }
+
+    public function disableJsonFileGeneration(): self
+    {
+        $this->disableJsonFileGeneration = true;
+
+        return $this;
     }
 }

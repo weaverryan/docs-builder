@@ -17,7 +17,10 @@ class BuildResult
 {
     private $builder;
     private $errors;
+    // only defined when using build() method
     private $jsonResults = [];
+    // only defined when using buildString() method
+    private $stringResult = null;
 
     public function __construct(Builder $builder)
     {
@@ -43,6 +46,11 @@ class BuildResult
     public function getErrors(): array
     {
         return $this->errors;
+    }
+
+    public function getErrorTrace(): string
+    {
+        return implode("\n", $this->errors);
     }
 
     public function getMetadata(): Metas
@@ -71,5 +79,19 @@ class BuildResult
     public function setJsonResults(array $jsonResults): void
     {
         $this->jsonResults = $jsonResults;
+    }
+
+    /**
+     * Returns the HTML result of building some string contents
+     * using the buildString() builder method
+     */
+    public function getStringResult(): ?string
+    {
+        return $this->stringResult;
+    }
+
+    public function setStringResult(string $result): void
+    {
+        $this->stringResult = $result;
     }
 }
