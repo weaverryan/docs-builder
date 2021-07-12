@@ -80,6 +80,12 @@ class BuildDocsCommand extends Command
                 'Path where any errors should be saved'
             )
             ->addOption(
+                'disable-parse-errors-on-stdout',
+                null,
+                InputOption::VALUE_NONE,
+                'Don\'t print errors to standard output'
+            )
+            ->addOption(
                 'no-theme',
                 null,
                 InputOption::VALUE_NONE,
@@ -137,7 +143,9 @@ class BuildDocsCommand extends Command
             KernelFactory::createKernel($this->buildConfig, $this->urlChecker ?? null)
         );
 
-        $this->addProgressListener($builder->getConfiguration()->getEventManager());
+        $configuration = $builder->getConfiguration();
+        $configuration->silentOnError($input->getOption('disable-parse-errors-on-stdout'));
+        $this->addProgressListener($configuration->getEventManager());
 
         $builder->build(
             $this->buildConfig->getContentDir(),
