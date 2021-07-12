@@ -80,6 +80,13 @@ class BuildDocsCommand extends Command
                 'Path where any errors should be saved'
             )
             ->addOption(
+                'error-output-format',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'The output format for errors on std out',
+                Configuration::OUTPUT_FORMAT_CONSOLE
+            )
+            ->addOption(
                 'no-theme',
                 null,
                 InputOption::VALUE_NONE,
@@ -137,7 +144,9 @@ class BuildDocsCommand extends Command
             KernelFactory::createKernel($this->buildConfig, $this->urlChecker ?? null)
         );
 
-        $this->addProgressListener($builder->getConfiguration()->getEventManager());
+        $configuration = $builder->getConfiguration();
+        $configuration->setOutputFormat($input->getOption('error-output-format'));
+        $this->addProgressListener($configuration->getEventManager());
 
         $builder->build(
             $this->buildConfig->getContentDir(),
@@ -159,7 +168,7 @@ class BuildDocsCommand extends Command
             }
 
             $filesystem = new Filesystem();
-            $filesystem->dumpFile($logPath, implode("\n", $buildErrors));
+            $filesystem->dumpFile($logPath, implode("\n", array_map(fn($error) => is_string($error) ? $error : $error->asString(), $buildErrors)));
         }
 
         $metas = $builder->getMetas();
